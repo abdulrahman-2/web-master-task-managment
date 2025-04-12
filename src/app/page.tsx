@@ -6,6 +6,7 @@ const Home = () => {
     <div>
       <Button className="bg-primary">Button</Button>
       <h1>Hello World</h1>
+      <span>The Title today</span>
     </div>
   );
 };
