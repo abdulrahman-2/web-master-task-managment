@@ -16,7 +16,7 @@ const Header = () => {
       <div className="flex items-center gap-3">
         {session ? (
           <>
-            <UserToggle email={session?.user?.email as string} />
+            <UserToggle email={"hYB2O@example.com"} />
           </>
         ) : (
           <Link href="/login">
