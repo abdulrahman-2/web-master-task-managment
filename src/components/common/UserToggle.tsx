@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FaUser } from "react-icons/fa";
 import { LiaSignOutAltSolid } from "react-icons/lia";
-import { signOut } from "next-auth/react";
 import { Button } from "../ui/button";
 
 export function UserToggle({ email }: { email: string }) {
@@ -24,7 +23,7 @@ export function UserToggle({ email }: { email: string }) {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>{email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem>
           <div className="flex items-center text-primary font-semibold gap-2">
             <LiaSignOutAltSolid />
             Sign out

@@ -11,7 +11,7 @@ const Home = () => {
         <div className="text-center">
           <h1 className="text-3xl text-nowrap md:text-4xl lg:text-6xl leading-[1.2] font-bold">
             Welcome to Amazing <br />{" "}
-            <span className="text-primary">Quick Task</span> App 🚀
+            <span className="text-primary">Rapid Task</span> App 🚀
           </h1>
           <p className="mt-5 font-semibold text-sm md:text-xl max-w-[80%] sm:max-w-[60%] mx-auto text-secondary-foreground">
             Quick Task is your go-to solution for managing tasks effortlessly.

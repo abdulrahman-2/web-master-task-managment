@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
 import Header from "@/components/layout/Header";
-import SessionProviderLayout from "@/components/common/SessionProviderLayout";
 import Notifications from "@/components/common/Notifications";
 
 const poppins = Poppins({
@@ -22,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={` ${poppins.className} antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -30,13 +29,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SessionProviderLayout>
             <Notifications />
             <Header />
-            <div className="container flex flex-col items-center justify-center h-full">
+            <div className="container mx-auto flex flex-col items-center justify-center h-full">
               {children}
             </div>
-          </SessionProviderLayout>
         </ThemeProvider>
       </body>
     </html>
