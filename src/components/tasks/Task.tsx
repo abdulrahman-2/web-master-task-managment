@@ -1,0 +1,263 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Pen, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type TaskType from "@/types/task";
+import type { Priority, Status } from "@/types/task";
+import { useAppDispatch } from "@/store/hooks";
+import {
+  deleteTask,
+  updateTaskStatus,
+  updateTaskName,
+  updateTaskPriority,
+  toggleTaskStatus,
+  updateTaskDescription,
+} from "@/store/features/tasks/tasksSlice";
+import { motion } from "framer-motion";
+import { Textarea } from "@/components/ui/textarea";
+
+export default function Task({ idx, task }: { idx: number; task: TaskType }) {
+  const dispatch = useAppDispatch();
+  const [isNameEditing, setIsNameEditing] = useState<boolean>(false);
+  const [isDescEditing, setIsDescEditing] = useState<boolean>(false);
+
+  // Handlers
+  const handleQuickToggle = (id: TaskType["id"]) => {
+    dispatch(toggleTaskStatus(id));
+  };
+
+  const handleNameChange = (id: TaskType["id"], name: string) => {
+    dispatch(updateTaskName({ id, name }));
+    setIsNameEditing(false);
+  };
+
+  const handleDescriptionChange = (id: TaskType["id"], description: string) => {
+    dispatch(updateTaskDescription({ id, description }));
+    setIsDescEditing(false);
+  };
+
+  const handlePriorityChange = (id: TaskType["id"], priority: Priority) => {
+    dispatch(updateTaskPriority({ id, priority }));
+  };
+
+  const handleStatusChange = (id: TaskType["id"], status: Status) => {
+    dispatch(updateTaskStatus({ id, status }));
+  };
+
+  const handleDelete = (id: TaskType["id"]) => {
+    dispatch(deleteTask(id));
+  };
+
+  return (
+    <motion.div
+      key={task.id}
+      layout
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ delay: idx * 0.05, duration: 0.3, ease: "easeOut" }}
+      className={cn(
+        "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg gap-4 bg-card group hover:bg-card/70 transition-colors duration-200"
+      )}
+    >
+      <div className="flex items-center gap-3 w-full sm:w-auto">
+        <Checkbox
+          checked={task.status === "Done"}
+          onCheckedChange={() => handleQuickToggle(task.id)}
+          className="w-6 h-6"
+        />
+        <div className="flex-1 flex flex-col min-w-xs">
+          {isNameEditing ? (
+            <Input
+              defaultValue={task.name}
+              onKeyDown={(e) =>
+                e.key === "Enter" &&
+                handleNameChange(task.id, (e.target as HTMLInputElement).value)
+              }
+              autoFocus
+              className="w-full sm:w-40"
+            />
+          ) : (
+            <div className="flex items-center">
+              <p
+                className="font-medium"
+                onTouchEnd={() => setIsNameEditing(true)}
+              >
+                {task.name}
+              </p>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsNameEditing(true)}
+                className={cn(
+                  "shrink-0 transition-opacity duration-200 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100"
+                )}
+              >
+                <Pen className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+          <div className="flex items-center">
+            {isDescEditing ? (
+              <Textarea
+                defaultValue={task.description}
+                onKeyDown={(e) =>
+                  e.key === "Enter" &&
+                  handleDescriptionChange(
+                    task.id,
+                    (e.target as HTMLTextAreaElement).value
+                  )
+                }
+                autoFocus
+                className="w-full sm:w-40"
+              />
+            ) : (
+              <>
+                {task.description ? (
+                  <p
+                    className="text-sm text-muted-foreground"
+                    onTouchEnd={() => setIsDescEditing(true)}
+                  >
+                    {task.description}
+                  </p>
+                ) : (
+                  <p
+                    className="text-sm text-muted-foreground"
+                    onTouchEnd={() => setIsDescEditing(true)}
+                  >
+                    No description
+                  </p>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsDescEditing(true)}
+                  className={cn(
+                    "shrink-0 transition-opacity duration-200 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100"
+                  )}
+                >
+                  <Pen className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-col items-end gap-2 w-full sm:w-auto">
+          <Select
+            value={task.priority}
+            onValueChange={(value: Priority) =>
+              handlePriorityChange(task.id, value)
+            }
+          >
+            <SelectGroup className="flex items-center justify-between w-full">
+              <SelectLabel className="text-sm">Priority:</SelectLabel>
+              <SelectTrigger className="w-full sm:w-[145px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Low">
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                    Low
+                  </div>
+                </SelectItem>
+                <SelectItem value="Medium">
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-yellow-500 mr-2" />
+                    Medium
+                  </div>
+                </SelectItem>
+                <SelectItem value="High">
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-red-500 mr-2" />
+                    High
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </SelectGroup>
+          </Select>
+          <Select
+            value={task.status}
+            onValueChange={(value: Status) =>
+              handleStatusChange(task.id, value)
+            }
+          >
+            <SelectGroup className="flex items-center justify-between w-full">
+              <SelectLabel className="text-sm">Status:</SelectLabel>
+              <SelectTrigger className="w-full sm:w-[145px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Low">
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                    Low
+                  </div>
+                </SelectItem>
+                <SelectItem value="Medium">
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-yellow-500 mr-2" />
+                    Medium
+                  </div>
+                </SelectItem>
+                <SelectItem value="High">
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-red-500 mr-2" />
+                    High
+                  </div>
+                </SelectItem>
+                <SelectContent>
+                  <SelectItem value="Todo">
+                    <div className="flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-gray-500 mr-2" />
+                      Todo
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="In Progress">
+                    <div className="flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
+                      In Progress
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="Done">
+                    <div className="flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                      Done
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="Cancelled">
+                    <div className="flex items-center">
+                      <span className="w-2 h-2 rounded-full bg-red-500 mr-2" />
+                      Cancelled
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </SelectContent>
+            </SelectGroup>
+          </Select>
+        </div>
+        <Button
+          variant="destructive"
+          size="icon"
+          onClick={() => handleDelete(task.id)}
+        >
+          <Trash2 />
+        </Button>
+      </div>
+    </motion.div>
+  );
+}
