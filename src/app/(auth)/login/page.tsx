@@ -7,7 +7,7 @@ const Login = () => {
     <div className="login-page flex flex-col gap-6 items-center justify-center h-screen text-white">
       <div className="flex items-center justify-center gap-3">
         <CheckCheck size={35} className="bg-primary text-white rounded p-1" />
-        <h1 className="text-4xl md:text-[35px] font-bold text-white">
+        <h1 className="text-3xl md:text-[35px] font-bold text-white">
           <span className="text-bg-primary">Rapid</span> Task
         </h1>
       </div>
@@ -15,10 +15,10 @@ const Login = () => {
       <div className="flex flex-col gap-6 rounded-md">
         <div className="flex flex-col border rounded-md bg-stone-900 border-stone-800 shadow-sm">
           <div className="p-6 text-center font-bold space-y-1">
-            <h3 className="title text-xl font-medium text-white">
+            <h3 className="title text-xl font-semibold text-white">
               Welcome back
             </h3>
-            <p className="text-muted-foreground font-light">
+            <p className="text-muted-foreground font-light text-sm">
               Login with your Github or Google account
             </p>
           </div>
@@ -53,7 +53,7 @@ const Login = () => {
             <form className="mt-6">
               <div className="grid gap-6">
                 <div className="grid relative">
-                  <label className="mb-2 font-medium text-sm" htmlFor="email">
+                  <label className="mb-2 font-medium text-sm leading-none" htmlFor="email">
                     Email
                   </label>
                   <input
@@ -70,7 +70,7 @@ const Login = () => {
                 </div>
                 <div className="grid relative">
                   <label
-                    className="mb-2 font-medium text-sm"
+                    className="mb-2 font-medium text-sm leading-none"
                     htmlFor="password"
                   >
                     Password
