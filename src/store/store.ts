@@ -1,13 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
-import someReducer from "./features/someSlice";
+import tasksReducer from "./features/tasks/tasksSlice";
+import tasksListener from "./features/tasks/tasksListener";
 
 const store = configureStore({
   reducer: {
-    some: someReducer,
+    tasks: tasksReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(tasksListener.middleware),
 });
 
 export default store;
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type AppStore = typeof store;
+export type RootState = ReturnType<AppStore["getState"]>;
+export type AppDispatch = AppStore["dispatch"];
