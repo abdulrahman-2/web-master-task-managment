@@ -1,24 +1,51 @@
 "use client";
 
 import { CheckCheck, CircleAlert, Eye } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {useState } from "react";
+import toast from "react-hot-toast";
 
 const SignUp = () => {
+
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
-    console.log(formData);
+    try {
+      const res = await fetch("http://localhost:3000/api/signUp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+      if(res.ok){
+        toast.success("User created successfully");
+        router.push("/login");
+      }else{
+        toast.error("User creation failed");
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
+
+
+        
   };
 
   return (
@@ -107,15 +134,15 @@ const SignUp = () => {
                   <input
                     className="bg-black h-10 px-3 py-2 rounded-md border border-stone-800 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     type="password"
-                    name="password"
-                    id="password"
+                    name="confirmPassword"
+                    id="confirmPassword"
                     placeholder="********"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                   />
                 </div>
                 <button
-                  type="button"
+                  type="submit"
                   className="focus:outline-none text-black bg-primary focus:ring-4 focus:ring-primary font-medium rounded-md text-sm px-5 py-2.5 me-2 dark:bg-primary dark:hover:bg-primary cursor-pointer dark:focus:ring-primary"
                 >
                   Sign up

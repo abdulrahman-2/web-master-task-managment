@@ -1,8 +1,42 @@
+'use client'
 import { CheckCheck, CircleAlert, Eye, Github } from "lucide-react";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { CgGoogle } from "react-icons/cg";
 
 const Login = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const router = useRouter();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        toast.success("User logged in successfully");
+        router.push("/tasks");
+      } else {
+        toast.error("User login failed");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="login-page flex flex-col gap-6 items-center justify-center h-screen text-white">
       <div className="flex items-center justify-center gap-3">
@@ -11,7 +45,7 @@ const Login = () => {
           <span className="text-bg-primary">Rapid</span> Task
         </h1>
       </div>
-      
+
       <div className="flex flex-col gap-6 rounded-md">
         <div className="flex flex-col border rounded-md bg-stone-900 border-stone-800 shadow-sm">
           <div className="p-6 text-center font-bold space-y-1">
@@ -50,7 +84,7 @@ const Login = () => {
                 Or continue with
               </span>
             </div>
-            <form className="mt-6">
+            <form className="mt-6" onSubmit={handleSubmit}>
               <div className="grid gap-6">
                 <div className="grid relative">
                   <label className="mb-2 font-medium text-sm" htmlFor="email">
@@ -62,6 +96,8 @@ const Login = () => {
                     name="email"
                     id="email"
                     placeholder="z@emaple.com"
+                    onChange={handleChange}
+                    value={formData.email}
                   />
                   <CircleAlert
                     size={16}
@@ -80,11 +116,14 @@ const Login = () => {
                     type="password"
                     name="password"
                     id="password"
+                    placeholder="••••••••"
+                    onChange={handleChange}
+                    value={formData.password}
                   />
                   <Eye size={16} className="absolute end-0 bottom-3 right-2" />
                 </div>
                 <button
-                  type="button"
+                  type="submit"
                   className="focus:outline-none text-black bg-primary focus:ring-4 focus:ring-primary font-medium rounded-md text-sm px-5 py-2.5 me-2 dark:bg-primary dark:hover:bg-primary cursor-pointer dark:focus:ring-primary"
                 >
                   Login
