@@ -31,8 +31,8 @@ export default function TaskList() {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="container border rounded-xl shadow mx-auto p-4 max-w-4xl">
+    <div className="h-[calc(100vh-135px)] flex items-center justify-center">
+      <div className="border rounded-xl shadow mx-auto p-4 max-w-4xl">
         <TopCards />
         <TitleAndActions />
         <TaskFilters />

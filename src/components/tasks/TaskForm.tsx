@@ -18,11 +18,7 @@ import useTaskForm from "@/hooks/tasks/useTaskForm";
 import { useAppDispatch } from "@/store/hooks";
 import { addTask } from "@/store/features/tasks/tasksSlice";
 
-export default function TaskForm({
-  closeModal,
-}: {
-  closeModal: () => void;
-}) {
+export default function TaskForm({ closeModal }: { closeModal: () => void }) {
   const dispatch = useAppDispatch();
   const { form } = useTaskForm();
 
