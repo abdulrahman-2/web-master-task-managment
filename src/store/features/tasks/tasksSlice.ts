@@ -6,8 +6,6 @@ import {
 } from "@reduxjs/toolkit";
 import type Task from "@/types/task";
 import type { Priority, Status } from "@/types/task";
-import { createTasks, deleteTaskAsync, fetchTasks, updateTask } from "@/store/tasksTunks";
-
 export type SortOption = "name" | "priority" | "status";
 export type SortDirection = "asc" | "desc";
 
@@ -149,28 +147,6 @@ const tasksSlice = createSlice({
         return task;
       });
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(fetchTasks.fulfilled, (state, action) => {
-      state.tasks = action.payload;
-      state.filteredTasks = action.payload;
-      state.isInitialized = true
-    }, 
-    
-  ).addCase(createTasks.fulfilled, (state, action) => {
-    state.tasks.push(action.payload);
-    state.filteredTasks.push(action.payload);
-  }).addCase(updateTask.fulfilled, (state, action) => {
-    state.tasks = state.tasks.map((task) =>
-      task.id === action.payload.id ? action.payload : task
-    );
-    state.filteredTasks = state.filteredTasks.map((task) =>
-      task.id === action.payload.id ? action.payload : task
-    );
-  }).addCase(deleteTaskAsync.fulfilled, (state, action) => {
-    state.tasks = state.tasks.filter((task) => task.id !== action.payload);
-    state.filteredTasks = state.filteredTasks.filter((task) => task.id !== action.payload); 
-  })
   },
 });
 

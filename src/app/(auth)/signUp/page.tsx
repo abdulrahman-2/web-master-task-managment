@@ -2,11 +2,10 @@
 
 import { CheckCheck, CircleAlert, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 const SignUp = () => {
-
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
@@ -14,8 +13,6 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
   });
-  
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -23,29 +20,24 @@ const SignUp = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3000/api/signUp", {
+      const res = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
-      if(res.ok){
+      });
+      if (res.ok) {
         toast.success("User created successfully");
         router.push("/login");
-      }else{
+      } else {
         toast.error("User creation failed");
       }
-      
     } catch (error) {
       console.log(error);
     }
-
-
-        
   };
 
   return (
