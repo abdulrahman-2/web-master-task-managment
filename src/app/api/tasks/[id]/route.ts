@@ -2,18 +2,70 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoDb";
 import Task from "@/lib/models/Task";
 import mongoose from "mongoose";
+import type TaskType from "@/types/Task";
 
-interface UpdateTaskData {
-  name?: string;
-  description?: string;
-  priority?: "low" | "medium" | "high";
-  status?: "todo" | "in-progress" | "done" | "cancelled";
-  userId?: string;
+type UpdateTaskData = Partial<TaskType>;
+
+export async function POST(req: NextRequest) {
+  try {
+    const taskData: TaskType = await req.json();
+
+    const { name, description, priority, status, date, userId } = taskData;
+
+    const token = req.cookies.get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    // Validate required fields
+    if (!name || !userId) {
+      return NextResponse.json({
+        status: 400,
+        success: false,
+        message: "Name and userId are required",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return NextResponse.json({
+        status: 400,
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+
+    await connectDB();
+
+    const newTask = new Task({
+      name,
+      description,
+      priority,
+      status,
+      date,
+      userId: new mongoose.Types.ObjectId(userId),
+    });
+
+    const savedTask = await newTask.save();
+
+    return NextResponse.json({
+      status: 201,
+      success: true,
+      message: "Task created successfully",
+      data: savedTask,
+    });
+  } catch (error) {
+    console.error("Error creating task:", error);
+    return NextResponse.json({
+      status: 500,
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 }
 
-export async function PUT(
+export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: TaskType["_id"] }> }
 ) {
   try {
     const { id } = await params;
@@ -76,7 +128,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: TaskType["_id"] }> }
 ) {
   try {
     const { id } = await params;

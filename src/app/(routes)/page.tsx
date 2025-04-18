@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BiTask } from "react-icons/bi";
 import { FaTasks } from "react-icons/fa";
 
-const Home = () => {
+export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-130px)]">
       <div className="flex items-center justify-between gap-20">
@@ -27,6 +27,4 @@ const Home = () => {
       </Link>
     </div>
   );
-};
-
-export default Home;
+}

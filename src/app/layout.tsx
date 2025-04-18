@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Notifications from "@/components/common/Notifications";
-import ProviderLayout from "@/components/Provider";
+import Providers from "@/components/Providers";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -11,7 +10,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Todo App",
-  description: "This is a Todo App built with Next.js 14 and Tailwind CSS",
+  description: "This is a Todo App built with Next.js 15, Shadcn and Tailwind CSS",
 };
 
 export default function RootLayout({
@@ -22,12 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={` ${poppins.className} antialiased`}>
-        <ProviderLayout>
-          <Notifications />
-          <div>
-            {children}
-          </div>
-        </ProviderLayout>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

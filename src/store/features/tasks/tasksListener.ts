@@ -1,6 +1,31 @@
 import { createListenerMiddleware } from "@reduxjs/toolkit";
-import { initialize, initializeTasks, setFilteredTasks } from "./tasksSlice";
+import {
+  addNewTask,
+  addTask,
+  clearDayTasks,
+  clearTasks,
+  deleteAllTasks,
+  deleteMultipleTasks,
+  deleteTask,
+  deleteTaskById,
+  initialize,
+  initializeTasks,
+  setAllTasks,
+  setFilteredTasks,
+  updateTask,
+  updateTaskData,
+} from "./tasksSlice";
 import type { AppDispatch, RootState } from "@/store/store";
+import {
+  createTaskApi,
+  updateTaskApi,
+  deleteTaskApi,
+  fetchTasksApi,
+  deleteAllTasksApi,
+  deleteMultipleTasksApi,
+} from "@/services/tasks";
+import { toast } from "sonner";
+import type Task from "@/types/Task";
 
 // Create listener middleware
 const tasksListener = createListenerMiddleware();
@@ -10,30 +35,145 @@ const listen = tasksListener.startListening.withTypes<RootState, AppDispatch>();
 listen({
   actionCreator: initializeTasks,
 
-  effect: (_action, listenerApi) => {
+  effect: async (action, listenerApi) => {
     const { dispatch, getState } = listenerApi;
     const { isInitialized } = getState().tasks;
 
     if (isInitialized) return;
 
+    const initialTasks = await fetchTasksApi();
+    dispatch(setAllTasks(initialTasks));
     dispatch(initialize());
+  },
+});
+
+// Listen for delete all tasks
+listen({
+  actionCreator: clearTasks,
+
+  effect: async (action, listenerApi) => {
+    const { dispatch, getState } = listenerApi;
+    const currentTasks = getState().tasks.tasks;
+
+    try {
+      dispatch(deleteAllTasks());
+      await deleteAllTasksApi();
+    } catch (err) {
+      dispatch(setAllTasks(currentTasks));
+      console.error(err);
+      toast.error("Failed to delete all tasks");
+    }
+  },
+});
+
+// Listen for delete all tasks in a specific day
+listen({
+  actionCreator: clearDayTasks,
+
+  effect: async (action, listenerApi) => {
+    const { dispatch, getState } = listenerApi;
+    const selectedDay = action.payload;
+
+    const currentTasks = getState().tasks.tasks;
+    const tasksToDeleteIds = currentTasks
+      .filter((task) => task.date === selectedDay)
+      .map((task) => task._id);
+
+    try {
+      dispatch(deleteMultipleTasks(tasksToDeleteIds));
+      await deleteMultipleTasksApi(tasksToDeleteIds);
+    } catch (err) {
+      dispatch(setAllTasks(currentTasks));
+      console.error(err);
+      toast.error("Failed to delete all tasks");
+    }
+  },
+});
+
+// Listen for new task creation
+listen({
+  actionCreator: addNewTask,
+
+  effect: async (action, listenerApi) => {
+    const { dispatch } = listenerApi;
+    const taskData = action.payload;
+
+    try {
+      const taskDataWithNewId = await toast
+        .promise(createTaskApi(taskData), {
+          loading: "Creating task...",
+        })
+        .unwrap();
+      dispatch(addTask(taskDataWithNewId));
+    } catch (err) {
+      dispatch(deleteTask(taskData._id));
+      console.error(err);
+      toast.error("Task creation failed");
+    }
+  },
+});
+
+// Listen for task updates
+listen({
+  actionCreator: updateTaskData,
+
+  effect: async (action, listenerApi) => {
+    const { dispatch, getState } = listenerApi;
+    const taskData = action.payload;
+    const prevData = getState().tasks.tasks.find(
+      (task) => task._id === taskData._id
+    ) as Task;
+
+    try {
+      dispatch(updateTask({ data: taskData }));
+      await updateTaskApi(taskData);
+    } catch (err) {
+      dispatch(updateTask({ data: prevData }));
+      console.error(err);
+      toast.error("Task update failed");
+    }
+  },
+});
+
+// Listen for task deletion
+listen({
+  actionCreator: deleteTaskById,
+
+  effect: async (action, listenerApi) => {
+    const { dispatch, getState } = listenerApi;
+    const taskId = action.payload;
+    const task = getState().tasks.tasks.find(
+      (task) => task._id === taskId
+    ) as Task;
+
+    try {
+      dispatch(deleteTask(taskId));
+      await deleteTaskApi(taskId);
+    } catch (err) {
+      dispatch(addTask(task));
+      console.error(err);
+      toast.error("Task deletion failed");
+    }
   },
 });
 
 // Listen for filter changes
 listen({
   predicate: (_action, currentState, previousState) =>
+    currentState.tasks.selectedDay !== previousState.tasks.selectedDay ||
     currentState.tasks.searchQuery !== previousState.tasks.searchQuery ||
     currentState.tasks.statusFilter !== previousState.tasks.statusFilter ||
     currentState.tasks.priorityFilter !== previousState.tasks.priorityFilter ||
     currentState.tasks.sortBy !== previousState.tasks.sortBy ||
     currentState.tasks.sortDirection !== previousState.tasks.sortDirection ||
     currentState.tasks.tasks !== previousState.tasks.tasks,
-  effect: (_action, listenerApi) => {
+
+  effect: (action, listenerApi) => {
     const { dispatch, getState } = listenerApi;
     const {
       isInitialized,
       tasks,
+      selectedDay,
       searchQuery,
       statusFilter,
       priorityFilter,
@@ -45,11 +185,16 @@ listen({
 
     let filteredTasks = [...tasks];
 
+    // Date Filter
+    filteredTasks = filteredTasks.filter((task) => task.date === selectedDay);
+
     // Search Filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filteredTasks = filteredTasks.filter((task) =>
-        task.name.toLowerCase().includes(query)
+      filteredTasks = filteredTasks.filter(
+        (task) =>
+          task.name.toLowerCase().includes(query) ||
+          task.description?.toLowerCase().includes(query)
       );
     }
 

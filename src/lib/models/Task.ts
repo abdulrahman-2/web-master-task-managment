@@ -8,19 +8,23 @@ const TaskSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: [true, "Description is required"],
+      required: false,
     },
     priority: {
       type: String,
-      enum: ["low", "medium", "high"],
-      default: "low",
+      enum: ["Low", "Medium", "High"],
+      default: "Low",
       required: [true, "Priority is required"],
     },
     status: {
       type: String,
-      enum: ["todo", "in-progress", "done", "cancelled"],
+      enum: ["Todo", "In Progress", "Done", "Cancelled"],
       default: "todo",
       required: [true, "Status is required"],
+    },
+    date: {
+      type: String,
+      required: [true, "Date is required"],
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,

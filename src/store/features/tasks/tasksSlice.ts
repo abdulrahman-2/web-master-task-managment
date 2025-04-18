@@ -1,11 +1,11 @@
 import {
   createAction,
   createSlice,
-  nanoid,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import type Task from "@/types/task";
-import type { Priority, Status } from "@/types/task";
+import type Task from "@/types/Task";
+import type { Priority, Status } from "@/types/Task";
+
 export type SortOption = "name" | "priority" | "status";
 export type SortDirection = "asc" | "desc";
 
@@ -15,6 +15,7 @@ interface InitialState {
   tasks: Task[];
   filteredTasks: Task[];
 
+  selectedDay: string;
   searchQuery: string;
   statusFilter: Status | "all";
   priorityFilter: Priority | "all";
@@ -28,6 +29,7 @@ const initialState: InitialState = {
   tasks: [],
   filteredTasks: [],
 
+  selectedDay: new Date().toISOString().split("T")[0],
   searchQuery: "",
   statusFilter: "all",
   priorityFilter: "all",
@@ -53,7 +55,15 @@ const tasksSlice = createSlice({
     deleteAllTasks: (state) => {
       state.tasks = [];
     },
+    deleteMultipleTasks: (state, action: PayloadAction<Task["_id"][]>) => {
+      state.tasks = state.tasks.filter(
+        (task) => !action.payload.includes(task._id)
+      );
+    },
 
+    setSelectedDay: (state, action: PayloadAction<string>) => {
+      state.selectedDay = action.payload;
+    },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
     },
@@ -70,104 +80,65 @@ const tasksSlice = createSlice({
       state.sortDirection = action.payload;
     },
 
-    addTask: (state, action: PayloadAction<Omit<Task, "id">>) => {
-      const id = nanoid();
-      const taskData = action.payload;
+    addTask: (state, action: PayloadAction<Task>) => {
+      const newTask = action.payload;
 
-      state.tasks = [...state.tasks, { id, ...taskData }];
+      state.tasks = [...state.tasks, newTask];
     },
-    deleteTask: (state, action: PayloadAction<string>) => {
-      const id = action.payload;
-
-      state.tasks = state.tasks.filter((task) => task.id !== id);
-    },
-
-    updateTaskName: (
+    updateTask: (
       state,
-      action: PayloadAction<{ id: string; name: string }>
+      action: PayloadAction<{
+        data: Partial<Task> & { _id: Task["_id"] };
+        newId?: Task["_id"];
+      }>
     ) => {
-      const { id, name } = action.payload;
+      const updatedTask = action.payload;
 
       state.tasks = state.tasks.map((task) => {
-        if (task.id === id) {
-          return { ...task, name };
-        }
-        return task;
-      });
-    },
-    updateTaskDescription: (
-      state,
-      action: PayloadAction<{ id: string; description: string }>
-    ) => {
-      const { id, description } = action.payload;
-
-      state.tasks = state.tasks.map((task) => {
-        if (task.id === id) {
-          return { ...task, description };
-        }
-        return task;
-      });
-    },
-    updateTaskPriority: (
-      state,
-      action: PayloadAction<{ id: string; priority: Priority }>
-    ) => {
-      const { id, priority } = action.payload;
-
-      state.tasks = state.tasks.map((task) => {
-        if (task.id === id) {
-          return { ...task, priority };
-        }
-        return task;
-      });
-    },
-    updateTaskStatus: (
-      state,
-      action: PayloadAction<{ id: string; status: Status }>
-    ) => {
-      const { id, status } = action.payload;
-
-      state.tasks = state.tasks.map((task) => {
-        if (task.id === id) {
-          return { ...task, status };
-        }
-        return task;
-      });
-    },
-    toggleTaskStatus: (state, action: PayloadAction<string>) => {
-      const id = action.payload;
-
-      state.tasks = state.tasks.map((task) => {
-        if (task.id === id) {
+        if (task._id === updatedTask.data._id) {
           return {
             ...task,
-            status: task.status === "Done" ? "In Progress" : "Done",
+            ...updatedTask.data,
+            _id: updatedTask.newId ?? task._id,
           };
         }
         return task;
       });
     },
+    deleteTask: (state, action: PayloadAction<string>) => {
+      const _id = action.payload;
+
+      state.tasks = state.tasks.filter((task) => task._id !== _id);
+    },
+
+    reset: () => initialState,
   },
 });
 
-export const initializeTasks = createAction<void>("tasks/initialize");
+export const initializeTasks = createAction<void>("tasks/initializeTasks");
+export const clearTasks = createAction<void>("tasks/clearTasks");
+export const clearDayTasks = createAction<string>("tasks/clearDayTasks");
+export const addNewTask = createAction<Task>("tasks/addNewTask");
+export const updateTaskData = createAction<
+  Partial<Task> & { _id: Task["_id"] }
+>("tasks/updateTaskData");
+export const deleteTaskById = createAction<string>("tasks/deleteTaskById");
 
 export const {
   initialize,
   setFilteredTasks,
   setAllTasks,
+  deleteAllTasks,
+  deleteMultipleTasks,
+  setSelectedDay,
   setSearchQuery,
   setStatusFilter,
   setPriorityFilter,
   setSortBy,
   setSortDirection,
-  deleteAllTasks,
   addTask,
+  updateTask,
   deleteTask,
-  updateTaskName,
-  updateTaskDescription,
-  updateTaskStatus,
-  updateTaskPriority,
-  toggleTaskStatus,
+  reset,
 } = tasksSlice.actions;
 export default tasksSlice.reducer;

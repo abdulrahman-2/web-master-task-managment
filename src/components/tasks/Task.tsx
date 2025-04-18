@@ -13,17 +13,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Pen, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type TaskType from "@/types/task";
-import type { Priority, Status } from "@/types/task";
+import type TaskType from "@/types/Task";
+import type { Priority, Status } from "@/types/Task";
 import { useAppDispatch } from "@/store/hooks";
-import {
-  deleteTask,
-  updateTaskStatus,
-  updateTaskName,
-  updateTaskPriority,
-  toggleTaskStatus,
-  updateTaskDescription,
-} from "@/store/features/tasks/tasksSlice";
+import { deleteTaskById, updateTask } from "@/store/features/tasks/tasksSlice";
 import { motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -33,35 +26,39 @@ export default function Task({ idx, task }: { idx: number; task: TaskType }) {
   const [isDescEditing, setIsDescEditing] = useState<boolean>(false);
 
   // Handlers
-  const handleQuickToggle = (id: TaskType["id"]) => {
-    dispatch(toggleTaskStatus(id));
+  const handleQuickToggle = (_id: TaskType["_id"]) => {
+    if (task.status === "Done") {
+      dispatch(updateTask({ _id, status: "In Progress" }));
+    } else {
+      dispatch(updateTask({ _id, status: "Done" }));
+    }
   };
 
-  const handleNameChange = (id: TaskType["id"], name: string) => {
-    dispatch(updateTaskName({ id, name }));
+  const handleNameChange = (_id: TaskType["_id"], name: string) => {
+    dispatch(updateTask({ _id, name }));
     setIsNameEditing(false);
   };
 
-  const handleDescriptionChange = (id: TaskType["id"], description: string) => {
-    dispatch(updateTaskDescription({ id, description }));
+  const handleDescriptionChange = (_id: TaskType["_id"], description: string) => {
+    dispatch(updateTask({ _id, description }));
     setIsDescEditing(false);
   };
 
-  const handlePriorityChange = (id: TaskType["id"], priority: Priority) => {
-    dispatch(updateTaskPriority({ id, priority }));
+  const handlePriorityChange = (_id: TaskType["_id"], priority: Priority) => {
+    dispatch(updateTask({ _id, priority }));
   };
 
-  const handleStatusChange = (id: TaskType["id"], status: Status) => {
-    dispatch(updateTaskStatus({ id, status }));
+  const handleStatusChange = (_id: TaskType["_id"], status: Status) => {
+    dispatch(updateTask({ _id, status }));
   };
 
-  const handleDelete = (id: TaskType["id"]) => {
-    dispatch(deleteTask(id));
+  const handleDelete = (_id: TaskType["_id"]) => {
+    dispatch(deleteTaskById(_id));
   };
 
   return (
     <motion.div
-      key={task.id}
+      key={task._id}
       layout
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -75,7 +72,7 @@ export default function Task({ idx, task }: { idx: number; task: TaskType }) {
       <div className="flex items-center gap-3 w-full sm:w-auto">
         <Checkbox
           checked={task.status === "Done"}
-          onCheckedChange={() => handleQuickToggle(task.id)}
+          onCheckedChange={() => handleQuickToggle(task._id)}
           className="w-6 h-6"
         />
         <div className="flex-1 flex flex-col min-w-xs">
@@ -84,7 +81,7 @@ export default function Task({ idx, task }: { idx: number; task: TaskType }) {
               defaultValue={task.name}
               onKeyDown={(e) =>
                 e.key === "Enter" &&
-                handleNameChange(task.id, (e.target as HTMLInputElement).value)
+                handleNameChange(task._id, (e.target as HTMLInputElement).value)
               }
               autoFocus
               className="w-full sm:w-40"
@@ -116,7 +113,7 @@ export default function Task({ idx, task }: { idx: number; task: TaskType }) {
                 onKeyDown={(e) =>
                   e.key === "Enter" &&
                   handleDescriptionChange(
-                    task.id,
+                    task._id,
                     (e.target as HTMLTextAreaElement).value
                   )
                 }
@@ -160,7 +157,7 @@ export default function Task({ idx, task }: { idx: number; task: TaskType }) {
           <Select
             value={task.priority}
             onValueChange={(value: Priority) =>
-              handlePriorityChange(task.id, value)
+              handlePriorityChange(task._id, value)
             }
           >
             <SelectGroup className="flex items-center justify-between w-full">
@@ -193,7 +190,7 @@ export default function Task({ idx, task }: { idx: number; task: TaskType }) {
           <Select
             value={task.status}
             onValueChange={(value: Status) =>
-              handleStatusChange(task.id, value)
+              handleStatusChange(task._id, value)
             }
           >
             <SelectGroup className="flex items-center justify-between w-full">
@@ -253,7 +250,7 @@ export default function Task({ idx, task }: { idx: number; task: TaskType }) {
         <Button
           variant="destructive"
           size="icon"
-          onClick={() => handleDelete(task.id)}
+          onClick={() => handleDelete(task._id)}
         >
           <Trash2 />
         </Button>

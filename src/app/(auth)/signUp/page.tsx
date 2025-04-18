@@ -1,18 +1,40 @@
 "use client";
 
-import { CheckCheck, CircleAlert, Eye } from "lucide-react";
+import { CheckCheck, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
+import type { SignupFormData } from "@/types/Auth";
+import { signupApi } from "@/services/auth";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import Link from "next/link";
+import { useAuthContext } from "@/context/AuthContext";
 
-const SignUp = () => {
+export default function SignUp() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const { user } = useAuthContext();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+
+  const [formData, setFormData] = useState<SignupFormData>({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    if (user) router.push("/tasks");
+  }, [router, user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,144 +43,122 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      if (res.ok) {
-        toast.success("User created successfully");
-        router.push("/login");
-      } else {
-        toast.error("User creation failed");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    await signupApi({ formData, router });
   };
 
   return (
-    <div className="login-page flex flex-col gap-6 items-center justify-center h-screen text-white">
-      <div className="flex items-center justify-center gap-3">
-        <CheckCheck size={35} className="bg-primary text-white rounded p-1" />
-        <h1 className="text-3xl md:text-[35px] font-bold text-white">
-          <span className="text-bg-primary">Rapid</span> Task
+    <div className="flex flex-col items-center justify-center h-screen gap-6 px-4">
+      <Link href="/" className="flex items-center gap-2">
+        <CheckCheck className="bg-primary text-white rounded p-1" size={32} />
+        <h1 className="text-3xl font-bold">
+          <span className="text-primary">Rapid</span> Task
         </h1>
-      </div>
+      </Link>
 
-      <div className="flex flex-col gap-6 rounded-md">
-        <div className="flex flex-col border rounded-md bg-stone-900 border-stone-800 shadow-sm">
-          <div className="p-6 text-center font-bold space-y-1">
-            <h3 className="title text-xl font-semibold text-white">Sign up</h3>
-            <p className="text-muted-foreground font-light text-sm">
-              Welcome to Quick Task! Please enter your details.
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center space-y-1">
+          <CardTitle className="text-2xl">Sign up</CardTitle>
+          <CardDescription>
+            Welcome to Rapid Task! Please enter your details.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="grid gap-5">
+            {/* Name */}
+            <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                name="name"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Email */}
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Password */}
+            <div className="grid gap-2 relative">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 bottom-2.5 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+
+            {/* Confirm Password */}
+            <div className="grid gap-2 relative">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 bottom-2.5 text-muted-foreground hover:text-foreground"
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+
+            {/* Submit */}
+            <Button type="submit" className="w-full">
+              Sign up
+            </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-primary underline underline-offset-4"
+              >
+                Login
+              </Link>
             </p>
-          </div>
-          <div className="p-6 pt-0">
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-6">
-                <div className="grid relative">
-                  <label
-                    className="mb-2 font-medium text-sm leading-none"
-                    htmlFor="name"
-                  >
-                    Name
-                  </label>
-                  <input
-                    className="bg-black h-10 px-3 py-2 rounded-md border border-stone-800 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    type="text"
-                    name="name"
-                    id="name"
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="grid relative">
-                  <label
-                    className="mb-2 font-medium text-sm leading-none"
-                    htmlFor="email"
-                  >
-                    Email
-                  </label>
-                  <input
-                    className="bg-black h-10 px-3 py-2 rounded-md border border-stone-800 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    type="email"
-                    name="email"
-                    id="email"
-                    placeholder="z@emaple.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                  <CircleAlert
-                    size={16}
-                    className="absolute end-0 bottom-3 right-2"
-                  />
-                </div>
-                <div className="grid relative">
-                  <label
-                    className="mb-2 font-medium text-sm leading-none"
-                    htmlFor="password"
-                  >
-                    Password
-                  </label>
-                  <input
-                    className="bg-black h-10 px-3 py-2 rounded-md border border-stone-800 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    type="password"
-                    name="password"
-                    id="password"
-                    placeholder="********"
-                    value={formData.password}
-                    onChange={handleChange}
-                  />
-                  <Eye size={16} className="absolute end-0 bottom-3 right-2" />
-                </div>
-                <div className="grid relative">
-                  <label
-                    className="mb-2 font-medium text-sm leading-none"
-                    htmlFor="password"
-                  >
-                    Confirm Password
-                  </label>
-                  <input
-                    className="bg-black h-10 px-3 py-2 rounded-md border border-stone-800 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    type="password"
-                    name="confirmPassword"
-                    id="confirmPassword"
-                    placeholder="********"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="focus:outline-none text-black bg-primary focus:ring-4 focus:ring-primary font-medium rounded-md text-sm px-5 py-2.5 me-2 dark:bg-primary dark:hover:bg-primary cursor-pointer dark:focus:ring-primary"
-                >
-                  Sign up
-                </button>
-                <div className="text-center text-sm">
-                  {`Already have an account? `}
-                  <a
-                    className="underline text-primary underline-offset-4"
-                    href="login"
-                  >
-                    Login
-                  </a>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div className="max-w-[60%] mx-auto text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
-          By clicking continue, you agree to our{" "}
-          <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-        </div>
-      </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Terms & Privacy */}
+      <p className="text-center text-xs text-muted-foreground max-w-xs text-balance">
+        By clicking continue, you agree to our{" "}
+        <a href="#" className="underline underline-offset-4 hover:text-primary">
+          Terms of Service
+        </a>{" "}
+        and{" "}
+        <a href="#" className="underline underline-offset-4 hover:text-primary">
+          Privacy Policy
+        </a>
+        .
+      </p>
     </div>
   );
-};
-
-export default SignUp;
+}
