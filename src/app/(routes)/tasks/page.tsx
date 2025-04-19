@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { useAuthContext } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import TaskClearControls from '@/components/tasks/TaskClearControls';
+import { Separator } from '@/components/ui/separator';
 
 export default function TaskList() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function TaskList() {
     <div className="flex w-full items-center justify-center">
       <div className="mx-auto w-full rounded-xl border p-4 shadow">
         <TopCards />
+        <Separator className="my-4" />
         <TitleAndActions />
         <TaskFilters />
 
