@@ -1,21 +1,20 @@
-import { Button } from "@/components/ui/button";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { clearDayTasks, clearTasks } from "@/store/features/tasks/tasksSlice";
-import { useState } from "react";
-import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
+import { clearDayTasks, clearTasks } from '@/store/features/tasks/tasksSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useState } from 'react';
 
 export default function TaskClearControls() {
   const dispatch = useAppDispatch();
-  const { isInitialized, tasks, selectedDay } = useAppSelector(
-    (state) => state.tasks
-  );
+  const { isInitialized, tasks, selectedDay } = useAppSelector((state) => state.tasks);
   const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
 
   const clearTasksForDay = () => {
@@ -29,9 +28,9 @@ export default function TaskClearControls() {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <p className="border-2 border-muted rounded-xl py-2 px-4 w-full sm:w-auto text-center">
-        {isInitialized ? <>Total tasks: {tasks.length}</> : "Loading tasks…"}
+    <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <p className="border-muted w-full rounded-xl border-2 px-4 py-2 text-center sm:w-auto">
+        {isInitialized ? <>Total tasks: {tasks.length}</> : 'Loading tasks…'}
       </p>
       <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
         <DialogTrigger asChild>
@@ -48,18 +47,15 @@ export default function TaskClearControls() {
             <DialogTitle>Confirm Deletion</DialogTitle>
           </DialogHeader>
 
-          <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete your tasks? You can delete all tasks
-            or just the ones from <strong>{selectedDay}</strong>.
+          <p className="text-muted-foreground text-sm">
+            Are you sure you want to delete your tasks? You can delete all tasks or just the ones
+            from <strong>{selectedDay}</strong>.
           </p>
 
-          <Separator className="my-4" />
+          <Separator />
 
-          <DialogFooter className="flex flex-col sm:flex-row justify-end gap-2">
-            <Button
-              variant="secondary"
-              onClick={clearTasksForDay}
-            >
+          <DialogFooter className="flex flex-col justify-end gap-2 sm:flex-row">
+            <Button variant="secondary" onClick={clearTasksForDay}>
               Delete for this day only
             </Button>
             <Button variant="destructive" onClick={clearAllTasks}>

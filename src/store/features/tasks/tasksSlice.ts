@@ -1,13 +1,9 @@
-import {
-  createAction,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
-import type Task from "@/types/Task";
-import type { Priority, Status } from "@/types/Task";
+import { createAction, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type Task from '@/types/Task';
+import type { Priority, Status } from '@/types/Task';
 
-export type SortOption = "name" | "priority" | "status";
-export type SortDirection = "asc" | "desc";
+export type SortOption = 'name' | 'priority' | 'status';
+export type SortDirection = 'asc' | 'desc';
 
 interface InitialState {
   isInitialized: boolean;
@@ -17,8 +13,8 @@ interface InitialState {
 
   selectedDay: string;
   searchQuery: string;
-  statusFilter: Status | "all";
-  priorityFilter: Priority | "all";
+  statusFilter: Status | 'all';
+  priorityFilter: Priority | 'all';
   sortBy: SortOption;
   sortDirection: SortDirection;
 }
@@ -29,16 +25,16 @@ const initialState: InitialState = {
   tasks: [],
   filteredTasks: [],
 
-  selectedDay: new Date().toISOString().split("T")[0],
-  searchQuery: "",
-  statusFilter: "all",
-  priorityFilter: "all",
-  sortBy: "name",
-  sortDirection: "desc",
+  selectedDay: new Date().toISOString().split('T')[0],
+  searchQuery: '',
+  statusFilter: 'all',
+  priorityFilter: 'all',
+  sortBy: 'name',
+  sortDirection: 'desc',
 };
 
 const tasksSlice = createSlice({
-  name: "tasks",
+  name: 'tasks',
   initialState,
   reducers: {
     initialize: (state) => {
@@ -55,10 +51,8 @@ const tasksSlice = createSlice({
     deleteAllTasks: (state) => {
       state.tasks = [];
     },
-    deleteMultipleTasks: (state, action: PayloadAction<Task["_id"][]>) => {
-      state.tasks = state.tasks.filter(
-        (task) => !action.payload.includes(task._id)
-      );
+    deleteMultipleTasks: (state, action: PayloadAction<Task['_id'][]>) => {
+      state.tasks = state.tasks.filter((task) => !action.payload.includes(task._id));
     },
 
     setSelectedDay: (state, action: PayloadAction<string>) => {
@@ -67,10 +61,10 @@ const tasksSlice = createSlice({
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
     },
-    setStatusFilter: (state, action: PayloadAction<Status | "all">) => {
+    setStatusFilter: (state, action: PayloadAction<Status | 'all'>) => {
       state.statusFilter = action.payload;
     },
-    setPriorityFilter: (state, action: PayloadAction<Priority | "all">) => {
+    setPriorityFilter: (state, action: PayloadAction<Priority | 'all'>) => {
       state.priorityFilter = action.payload;
     },
     setSortBy: (state, action: PayloadAction<SortOption>) => {
@@ -85,21 +79,14 @@ const tasksSlice = createSlice({
 
       state.tasks = [...state.tasks, newTask];
     },
-    updateTask: (
-      state,
-      action: PayloadAction<{
-        data: Partial<Task> & { _id: Task["_id"] };
-        newId?: Task["_id"];
-      }>
-    ) => {
+    updateTask: (state, action: PayloadAction<Partial<Task> & { _id: Task['_id'] }>) => {
       const updatedTask = action.payload;
 
       state.tasks = state.tasks.map((task) => {
-        if (task._id === updatedTask.data._id) {
+        if (task._id === updatedTask._id) {
           return {
             ...task,
-            ...updatedTask.data,
-            _id: updatedTask.newId ?? task._id,
+            ...updatedTask,
           };
         }
         return task;
@@ -115,14 +102,14 @@ const tasksSlice = createSlice({
   },
 });
 
-export const initializeTasks = createAction<void>("tasks/initializeTasks");
-export const clearTasks = createAction<void>("tasks/clearTasks");
-export const clearDayTasks = createAction<string>("tasks/clearDayTasks");
-export const addNewTask = createAction<Task>("tasks/addNewTask");
-export const updateTaskData = createAction<
-  Partial<Task> & { _id: Task["_id"] }
->("tasks/updateTaskData");
-export const deleteTaskById = createAction<string>("tasks/deleteTaskById");
+export const initializeTasks = createAction<void>('tasks/initializeTasks');
+export const clearTasks = createAction<void>('tasks/clearTasks');
+export const clearDayTasks = createAction<string>('tasks/clearDayTasks');
+export const addNewTask = createAction<Task>('tasks/addNewTask');
+export const updateTaskData = createAction<Partial<Task> & { _id: Task['_id'] }>(
+  'tasks/updateTaskData'
+);
+export const deleteTaskById = createAction<string>('tasks/deleteTaskById');
 
 export const {
   initialize,

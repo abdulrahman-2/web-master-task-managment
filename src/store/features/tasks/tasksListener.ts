@@ -1,4 +1,4 @@
-import { createListenerMiddleware } from "@reduxjs/toolkit";
+import { createListenerMiddleware } from '@reduxjs/toolkit';
 import {
   addNewTask,
   addTask,
@@ -14,8 +14,8 @@ import {
   setFilteredTasks,
   updateTask,
   updateTaskData,
-} from "./tasksSlice";
-import type { AppDispatch, RootState } from "@/store/store";
+} from './tasksSlice';
+import type { AppDispatch, RootState } from '@/store/store';
 import {
   createTaskApi,
   updateTaskApi,
@@ -23,9 +23,9 @@ import {
   fetchTasksApi,
   deleteAllTasksApi,
   deleteMultipleTasksApi,
-} from "@/services/tasks";
-import { toast } from "sonner";
-import type Task from "@/types/Task";
+} from '@/services/tasks';
+import { toast } from 'sonner';
+import type Task from '@/types/Task';
 
 // Create listener middleware
 const tasksListener = createListenerMiddleware();
@@ -37,12 +37,15 @@ listen({
 
   effect: async (action, listenerApi) => {
     const { dispatch, getState } = listenerApi;
-    const { isInitialized } = getState().tasks;
+    const { isInitialized, selectedDay } = getState().tasks;
 
     if (isInitialized) return;
 
     const initialTasks = await fetchTasksApi();
     dispatch(setAllTasks(initialTasks));
+    dispatch(
+      setFilteredTasks(initialTasks.filter((task) => task.date === selectedDay))
+    );
     dispatch(initialize());
   },
 });
@@ -61,7 +64,7 @@ listen({
     } catch (err) {
       dispatch(setAllTasks(currentTasks));
       console.error(err);
-      toast.error("Failed to delete all tasks");
+      toast.error('Failed to delete all tasks');
     }
   },
 });
@@ -85,7 +88,7 @@ listen({
     } catch (err) {
       dispatch(setAllTasks(currentTasks));
       console.error(err);
-      toast.error("Failed to delete all tasks");
+      toast.error('Failed to delete all tasks');
     }
   },
 });
@@ -101,14 +104,14 @@ listen({
     try {
       const taskDataWithNewId = await toast
         .promise(createTaskApi(taskData), {
-          loading: "Creating task...",
+          loading: 'Creating task...',
         })
         .unwrap();
       dispatch(addTask(taskDataWithNewId));
     } catch (err) {
       dispatch(deleteTask(taskData._id));
       console.error(err);
-      toast.error("Task creation failed");
+      toast.error('Task creation failed');
     }
   },
 });
@@ -120,17 +123,15 @@ listen({
   effect: async (action, listenerApi) => {
     const { dispatch, getState } = listenerApi;
     const taskData = action.payload;
-    const prevData = getState().tasks.tasks.find(
-      (task) => task._id === taskData._id
-    ) as Task;
+    const prevData = getState().tasks.tasks.find((task) => task._id === taskData._id) as Task;
 
     try {
-      dispatch(updateTask({ data: taskData }));
+      dispatch(updateTask(taskData));
       await updateTaskApi(taskData);
     } catch (err) {
-      dispatch(updateTask({ data: prevData }));
+      dispatch(updateTask(prevData));
       console.error(err);
-      toast.error("Task update failed");
+      toast.error('Task update failed');
     }
   },
 });
@@ -142,9 +143,7 @@ listen({
   effect: async (action, listenerApi) => {
     const { dispatch, getState } = listenerApi;
     const taskId = action.payload;
-    const task = getState().tasks.tasks.find(
-      (task) => task._id === taskId
-    ) as Task;
+    const task = getState().tasks.tasks.find((task) => task._id === taskId) as Task;
 
     try {
       dispatch(deleteTask(taskId));
@@ -152,7 +151,7 @@ listen({
     } catch (err) {
       dispatch(addTask(task));
       console.error(err);
-      toast.error("Task deletion failed");
+      toast.error('Task deletion failed');
     }
   },
 });
@@ -193,36 +192,29 @@ listen({
       const query = searchQuery.toLowerCase();
       filteredTasks = filteredTasks.filter(
         (task) =>
-          task.name.toLowerCase().includes(query) ||
-          task.description?.toLowerCase().includes(query)
+          task.name.toLowerCase().includes(query) || task.description?.toLowerCase().includes(query)
       );
     }
 
     // Completion Filter
-    if (statusFilter !== "all") {
-      filteredTasks = filteredTasks.filter(
-        (task) => task.status === statusFilter
-      );
+    if (statusFilter !== 'all') {
+      filteredTasks = filteredTasks.filter((task) => task.status === statusFilter);
     }
 
     // // Priority Filter
-    if (priorityFilter !== "all") {
-      filteredTasks = filteredTasks.filter(
-        (task) => task.priority === priorityFilter
-      );
+    if (priorityFilter !== 'all') {
+      filteredTasks = filteredTasks.filter((task) => task.priority === priorityFilter);
     }
 
     // Sorting
     filteredTasks.sort((a, b) => {
-      const isAsc = sortDirection === "asc";
+      const isAsc = sortDirection === 'asc';
 
-      if (sortBy === "name") {
-        return isAsc
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
+      if (sortBy === 'name') {
+        return isAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
       }
 
-      if (sortBy === "priority") {
+      if (sortBy === 'priority') {
         const order = { High: 3, Medium: 2, Low: 1 };
         return isAsc
           ? order[a.priority] - order[b.priority]
