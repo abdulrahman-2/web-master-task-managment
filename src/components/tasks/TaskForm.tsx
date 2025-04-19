@@ -8,35 +8,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Priority, Status } from "@/types/task";
+import { Priority, Status } from "@/types/Task";
 import {
   priorities,
   statuses,
   TaskFormData,
-} from "@/utils/tasks/taskFormValidation";
+} from "@/utils/validations/taskFormValidation";
 import useTaskForm from "@/hooks/tasks/useTaskForm";
-import { useAppDispatch } from "@/store/hooks";
-import { addTask } from "@/store/features/tasks/tasksSlice";
 
-export default function TaskForm({
-  closeModal,
-}: {
-  closeModal: () => void;
-}) {
-  const dispatch = useAppDispatch();
-  const { form } = useTaskForm();
+export default function TaskForm({ closeModal }: { closeModal: () => void }) {
+  const { form, submitTask } = useTaskForm(closeModal);
 
-  const handleFormSubmit = (data: TaskFormData) => {
-    const newTask = {
-      name: data.name,
-      description: data.description,
-      priority: data.priority,
-      status: data.status,
-    };
-
-    dispatch(addTask(newTask));
-    form.reset();
-    closeModal();
+  const handleFormSubmit = async (data: TaskFormData) => {
+    submitTask(data);
   };
 
   return (

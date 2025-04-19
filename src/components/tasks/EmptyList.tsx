@@ -13,7 +13,9 @@ export default function EmptyList() {
       <div className="flex flex-col items-center text-center text-muted-foreground">
         <ClipboardList className="w-12 h-12 mb-3" />
         <p className="text-lg font-medium">No tasks yet</p>
-        <p className="text-sm">Start by creating your first task.</p>
+        <p className="text-sm">
+          Create your first task or adjust your filters to see existing ones.
+        </p>
       </div>
     </motion.div>
   );

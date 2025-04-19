@@ -19,7 +19,7 @@ import {
   type SortOption,
 } from "@/store/features/tasks/tasksSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import type { Priority, Status } from "@/types/task";
+import type { Priority, Status } from "@/types/Task";
 
 export function TaskFilters() {
   const dispatch = useAppDispatch();
@@ -50,7 +50,7 @@ export function TaskFilters() {
   return (
     <div className="flex flex-col justify-between sm:flex-row flex-wrap gap-4 mb-6 items-center">
       {/* Search */}
-      <div className="flex flex-col w-full sm:w-auto">
+      <div className="flex flex-col w-full lg:w-2/5 md:w-auto">
         <label className="text-sm font-medium text-muted-foreground px-2 py-1.5">
           Search:
         </label>
@@ -58,19 +58,19 @@ export function TaskFilters() {
           placeholder="Search tasks..."
           defaultValue={searchQuery}
           onChange={handleSearchQueryChange}
-          className="py-2 w-full sm:w-60"
+          className="py-2 w-full"
         />
       </div>
 
       {/* Status Filter */}
-      <div className="flex flex-col w-full sm:w-auto">
+      <div className="flex flex-col w-full sm:flex-1">
         <Select
           defaultValue={statusFilter}
           onValueChange={(value) => handleStatusChange(value as Status)}
         >
           <SelectGroup>
             <SelectLabel className="text-sm font-medium">Status:</SelectLabel>
-            <SelectTrigger className="w-full sm:w-[150px]">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter Status" />
             </SelectTrigger>
             <SelectContent>
@@ -85,14 +85,14 @@ export function TaskFilters() {
       </div>
 
       {/* Priority Filter */}
-      <div className="flex flex-col w-full sm:w-auto">
+      <div className="flex flex-col w-full sm:flex-1">
         <Select
           defaultValue={priorityFilter}
           onValueChange={(value) => handlePriorityChange(value as Priority)}
         >
           <SelectGroup>
             <SelectLabel className="text-sm font-medium">Priority:</SelectLabel>
-            <SelectTrigger className="w-full sm:w-[130px]">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter Priority" />
             </SelectTrigger>
             <SelectContent>
@@ -106,14 +106,14 @@ export function TaskFilters() {
       </div>
 
       {/* Sort By */}
-      <div className="flex flex-col w-full sm:w-auto">
+      <div className="flex flex-col w-full sm:flex-1">
         <Select
           defaultValue={sortBy}
           onValueChange={(value) => handleSortByChange(value as SortOption)}
         >
           <SelectGroup>
             <SelectLabel className="text-sm font-medium">Sort by:</SelectLabel>
-            <SelectTrigger className="w-full sm:w-[120px]">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent>
@@ -125,7 +125,7 @@ export function TaskFilters() {
       </div>
 
       {/* Sort Direction */}
-      <div className="flex flex-col w-full sm:w-[140px]">
+      <div className="flex flex-col w-full sm:flex-1">
         <label className="text-sm font-medium text-muted-foreground px-2 py-1.5">
           Sort Direction:
         </label>

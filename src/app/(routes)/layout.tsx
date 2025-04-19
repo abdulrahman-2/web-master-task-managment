@@ -21,10 +21,10 @@ export default function RootLayout({
   return (
     <main lang="en">
       <div className={` ${poppins.className} antialiased`}>
-            <Header />
-            <div className="container mx-auto flex flex-col items-center justify-center h-full">
-              {children}
-            </div>
+        <Header />
+        <div className="container mx-auto flex flex-col items-center justify-center h-full">
+          {children}
+        </div>
       </div>
     </main>
   );
