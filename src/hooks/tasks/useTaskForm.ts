@@ -4,7 +4,7 @@ import { TaskFormData, taskSchema } from "@/utils/validations/taskFormValidation
 import { addNewTask } from "@/store/features/tasks/tasksSlice";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import type Task from "@/types/Task";
+import type Task from "@/types/task";
 import { useAuthContext } from "@/context/AuthContext";
 import { nanoid } from "@reduxjs/toolkit";
 

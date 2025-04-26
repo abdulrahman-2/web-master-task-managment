@@ -19,7 +19,7 @@ import {
   type SortOption,
 } from "@/store/features/tasks/tasksSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import type { Priority, Status } from "@/types/Task";
+import type { Priority, Status } from "@/types/task";
 
 export function TaskFilters() {
   const dispatch = useAppDispatch();

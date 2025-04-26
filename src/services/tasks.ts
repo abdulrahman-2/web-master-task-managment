@@ -1,4 +1,4 @@
-import type Task from "@/types/Task";
+import type Task from "@/types/task";
 
 const API_BASE_URL = "/api/tasks";
 

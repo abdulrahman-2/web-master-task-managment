@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoDb";
 import Task from "@/lib/models/Task";
 import mongoose from "mongoose";
-import type TaskType from "@/types/Task";
+import type TaskType from "@/types/task";
 
 type UpdateTaskData = Partial<TaskType>;
 
