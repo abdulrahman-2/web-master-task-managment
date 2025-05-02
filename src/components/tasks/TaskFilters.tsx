@@ -77,7 +77,7 @@ export function TaskFilters() {
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="Todo">Todo</SelectItem>
               <SelectItem value="In Progress">In Progress</SelectItem>
-              <SelectItem value="Completed">Completed</SelectItem>
+              <SelectItem value="Done">Done</SelectItem>
               <SelectItem value="Cancelled">Cancelled</SelectItem>
             </SelectContent>
           </SelectGroup>
