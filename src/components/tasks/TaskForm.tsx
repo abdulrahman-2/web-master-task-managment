@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Priority, Status } from "@/types/task";
+import { Priority, Status } from "@/types/Task";
 import {
   priorities,
   statuses,

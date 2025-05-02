@@ -25,7 +25,7 @@ import {
   deleteMultipleTasksApi,
 } from '@/services/tasks';
 import { toast } from 'sonner';
-import type Task from '@/types/task';
+import type Task from '@/types/Task';
 
 // Create listener middleware
 const tasksListener = createListenerMiddleware();

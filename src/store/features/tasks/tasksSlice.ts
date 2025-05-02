@@ -1,6 +1,6 @@
 import { createAction, createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type Task from '@/types/task';
-import type { Priority, Status } from '@/types/task';
+import type Task from '@/types/Task';
+import type { Priority, Status } from '@/types/Task';
 
 export type SortOption = 'name' | 'priority' | 'status';
 export type SortDirection = 'asc' | 'desc';
