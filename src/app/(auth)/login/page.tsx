@@ -128,8 +128,8 @@ export default function Login() {
         </CardContent>
       </Card>
 
-      {/* Terms */}
-      <p className="text-muted-foreground max-w-[60%] text-center text-xs">
+      {/* Terms & Privacy */}
+      <p className="text-muted-foreground max-w-sm text-center text-xs text-balance">
         By clicking continue, you agree to our{' '}
         <a href="#" className="hover:text-primary underline underline-offset-4">
           Terms of Service
